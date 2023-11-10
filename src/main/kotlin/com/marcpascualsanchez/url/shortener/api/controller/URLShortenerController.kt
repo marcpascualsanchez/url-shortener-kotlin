@@ -3,22 +3,35 @@ package com.marcpascualsanchez.url.shortener.api.controller
 import com.marcpascualsanchez.url.shortener.api.request.ShortenedURLCreationRequest
 import com.marcpascualsanchez.url.shortener.api.response.ShortenedURLCreationResponse
 import com.marcpascualsanchez.url.shortener.domain.service.URLShortenerService
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RestController
-@RequestMapping("/api/v1/url-shortener")
+@RequestMapping("")
 class URLShortenerController(
-    private val URLShortenerService: URLShortenerService
+    private val urlShortenerService: URLShortenerService
 ) {
 
-    @PostMapping("/create")
+    @PostMapping("/api/v1/url-shortener/create")
     fun createShortenedURL(
         @Valid @RequestBody request: ShortenedURLCreationRequest
     ): ShortenedURLCreationResponse {
-        return ShortenedURLCreationResponse(URLShortenerService.createShorterURL(request.URL))
+        return ShortenedURLCreationResponse(urlShortenerService.createShorterURL(request.URL))
+    }
+
+    @GetMapping("/s/{shortURL}")
+    fun redirectToOriginalURL(
+        @PathVariable shortURL: String,
+        response: HttpServletResponse
+    ) {
+        val originalURL = urlShortenerService.findOriginalURLByShorterURL(shortURL)
+        if (originalURL == null) {
+            response.status = 404
+        } else {
+            response.setHeader("Location", originalURL)
+            response.status = 302
+        }
     }
 }

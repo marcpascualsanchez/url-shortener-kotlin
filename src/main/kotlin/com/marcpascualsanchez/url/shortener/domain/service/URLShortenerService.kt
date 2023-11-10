@@ -21,6 +21,10 @@ class URLShortenerService(
         return Base64.getEncoder().encodeToString(hash)
     }
 
+    fun findOriginalURLByShorterURL(shorterURL: String): String? {
+        return shortenedURLsRepository.find(shorterURL)?.originalURL
+    }
+
     companion object {
         val MD5: MessageDigest = MessageDigest.getInstance("MD5")
     }
