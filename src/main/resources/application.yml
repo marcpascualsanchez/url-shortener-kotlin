@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: url-shortener
+
+redis:
+  host: replace-with-host
+  port: 6379
+  time-unit: DAYS
+  time-to-live: 30
+
+springdoc:
+  swagger-ui:
+    path: /api-docs
